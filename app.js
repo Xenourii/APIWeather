@@ -8,7 +8,7 @@ var http = require('http');
 app.use(bodyParser.json());
 app.use("/", require("./web/index.js"));
 
-var port = process.env.PORT || 3000;
+var port = 3000;
 
 http.createServer(app).listen(port, function() {
     console.log(`App runnning on port: ${port}`);
