@@ -5,15 +5,15 @@ var db = require('../../../../config/index.js');
 
 var WeatherSite = require('../../../../models/WeatherSite.js');
 
-router.get("/:Id", function(req, res){
+router.get("/:SiteId", function(req, res){
 
-  WeatherSite.findOne({site_id: req.params.Id}, function(err, weatherSite){
+  WeatherSite.findOne({site_id: req.params.SiteId, isActivated: true}, function(err, weatherSite){
     if (weatherSite){
       var updatedTime = weatherSite.updated_at.getTime();
       var nowTime = Date.now().getTime();
       var IsUpdateNeeded = (nowTime - updatedTime > 21600); // 21600 seconds = 6 hours
       if( IsUpdateNeeded ){
-        OpenWeatherMapHelper.getCurrentWeatherByCityID(req.params.Id, function(err, currentWeather){
+        OpenWeatherMapHelper.getCurrentWeatherByCityID(req.params.SiteId, function(err, currentWeather){
           if(err)
             res.status(500).json(err);
 
@@ -31,12 +31,12 @@ router.get("/:Id", function(req, res){
       }
     }
     else{
-      OpenWeatherMapHelper.getCurrentWeatherByCityID(req.params.Id, function(err, currentWeather){
+      OpenWeatherMapHelper.getCurrentWeatherByCityID(req.params.SiteId, function(err, currentWeather){
         if(err)
           res.status(500).json(err);
 
         var newWeatherSite = new WeatherSite();
-        newWeatherSite.site_id = req.params.Id;
+        newWeatherSite.site_id = req.params.SiteId;
         newWeatherSite.openweathermap = currentWeather;
 
         newWeatherSite.save((err) => {
@@ -50,8 +50,54 @@ router.get("/:Id", function(req, res){
 
 });
 
-router.get("/paragliding/:Id", function(req, res){
-  WeatherSite.findOne({site_id: req.params.Id}, function(err, weatherSite){
+router.post('/', function(req, res){
+  var weatherSite = new WeatherSite();
+
+  weatherSite.site_id = req.body.SiteId;
+  weatherSite.openweathermap = req.body.Openweathermap;
+
+  weatherSite.save((err)=> {
+    if(err)
+      res.status(500).json(err);
+
+    res.status(200).json({message: 'added'});
+  });
+});
+
+router.patch('/:SiteId', function(req, res){
+  var weatherSite = new WeatherSite();
+
+  weatherSite.site_id = req.body.SiteId || weatherSite.site_id;
+  weatherSite.openweathermap = req.body.Openweathermap || weatherSite.openweathermap;
+
+  weatherSite.save((err)=> {
+    if(err)
+      res.status(500).json(err);
+
+    res.status(200).json({message: 'updated'});
+  });
+});
+
+router.delete("/:SiteId", function(req, res){
+  var site_id = req.params.SiteId;
+  if (!site_id)
+    res.status(400).json({message: "Invalid Id."});
+
+    WeatherSite.findOne({site_id: req.params.SiteId, isActivated: true}, function(err, weatherSite){
+      if(!weatherSite)
+        res.status(401).json(err);
+
+      WeatherSite.findAndUpdate({_id: weatherSite._id}, {isActivated: false}, function(err, res){
+        if(err)
+          res.status(500).json(message: 'weatherSite not found');
+
+        res.status(200).json({message: 'deleted'});
+      }),
+    });
+});
+
+router.get("/paragliding/:SiteId", function(req, res){
+  WeatherSite.findOne({site_id: req.params.SiteId}, function(err, weatherSite){
     if (err)
       res.status(500).json(err);
 
