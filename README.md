@@ -6,6 +6,8 @@ See the `MCD.PNG` file in the root of the repository.
 
 ## Api
 
+Create a `.env` file at the root of the project, and put inside `APPID=YourOpenWeatherMapID`  
+  
 
 * localhost:3000/api/sites/:SiteId (GET) -> get a specific weather of a site, by his SiteId.  
 
