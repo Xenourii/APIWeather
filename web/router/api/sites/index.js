@@ -102,6 +102,29 @@ router.delete("/:SiteId", function(req, res){
 
 router.get("/paragliding/:SiteId", function(req, res){
 
+  // var windDirection get from mysql
+  var cardinalDirection = ['N', 'NE', 'E'];
+
+  WeatherSite.findOne({site_id: req.params.SiteId}, function(err, weatherSite){
+    if (err)
+      res.status(500).json(err);
+
+      var weatherId = weatherSite.openweathermap.weather[0].id;
+      var windSpeed = weatherSite.openweathermap.wind.speed;
+      var windDirectionDegree = weatherSite.openweathermap.wind.deg; //N = 0, E = 90, S = 180, W = 270
+
+      var IsWeatherOK = (weatherId >= 800 && weatherId <= 804);
+      var IsWindSpeedOK = (windSpeed * 3.6 < 35);
+      var IsWindDirectionOK = IsWindDirectionOK(cardinalDirection, windDirectionDegree)
+
+      if(IsWeatherOK && IsWindSpeedOK && IsWindDirectionOK)
+        res.status(200).json({'message': true});
+      else
+        res.status(200).json({'message': false});
+  });
+});
+
+function IsWindDirectionOK(cardinalDirection, degree){
   var cardinalPoint = {
     "N":[348.75, 11.25],
     "NNE":[11.25, 33.75],
@@ -121,26 +144,13 @@ router.get("/paragliding/:SiteId", function(req, res){
     "NNW":[326.25, 348.75]
   }
 
-  // var windDirection get from mysql
+  cardinalDirection.forEach(function(elem){
+    var acceptedDegree = cardinalPoint[elem];
+    if ( degree >= acceptedDegree[0] && degree <= acceptedDegree[1])
+      return true;
+  })
 
-
-  WeatherSite.findOne({site_id: req.params.SiteId}, function(err, weatherSite){
-    if (err)
-      res.status(500).json(err);
-
-      var weatherId = weatherSite.openweathermap.weather[0].id;
-      var windSpeed = weatherSite.openweathermap.wind.speed;
-      var windDirectionDegree = weatherSite.openweathermap.wind.deg; //N = 0, E = 90, S = 180, W = 270
-
-      var IsWeatherOK = (weatherId >= 800 && weatherId <= 804);
-      var IsWindSpeedOK = (windSpeed * 3.6 < 35);
-      var IsWindDirectionOK = true; //TODO read from the other database to get the degree !
-
-      if(IsWeatherOK && IsWindSpeedOK && IsWindDirectionOK)
-        res.status(200).json({'message': true});
-      else
-        res.status(200).json({'message': false});
-  });
-});
+  return false;
+}
 
 module.exports = router;
