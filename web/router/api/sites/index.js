@@ -9,7 +9,7 @@ router.get('/', function(req, res){
     if(err)
       res.status(500).json(err);
 
-    res.status(sites)
+    res.status(200).json(sites);
   });
 });
 
