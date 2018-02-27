@@ -1,5 +1,8 @@
 # Weather APP
 
+## MCD
+
+See the `MCD.PNG` file in the root of the repository.
 
 ## Api
 
