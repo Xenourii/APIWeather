@@ -1,5 +1,6 @@
 var router = require('express').Router();
 
+router.use('/weather', require('./weather/index.js'));
 router.use('/sites', require('./sites/index.js'));
 
 router.get('/', function(req, res) {
