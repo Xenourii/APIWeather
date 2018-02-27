@@ -9,7 +9,7 @@ router.get("/:SiteId", function(req, res){
   var coordLatitude = 0.0;
   var coordLongitude = 0.0;
 
-  var sql = "SELECT * from sites WHEN id=" + req.params.SiteId;
+  var sql = "SELECT * from sites WHERE id=" + req.params.SiteId;
   mysqlconnection.query(sql, function (err, result){
     if(err)
       res.status(500).json(err);
