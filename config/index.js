@@ -10,9 +10,10 @@ mongoose.connect('weatherRepl/mongoMaster:27017,mongoRep1:27017,mongoRep2:27017/
                 });
 
 var mysqlconnection = mysql.createConnection({
-  host: "sqlMaster",
+  host: "mysql-master",
   port: 3306,
-  database: 'weatherdbsql'
+  database: 'weatherdbsql',
+  user: 'weatherUser'
 });
 
 mysqlconnection.connect(function(err){

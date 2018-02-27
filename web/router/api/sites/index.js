@@ -89,10 +89,10 @@ router.delete("/:SiteId", function(req, res){
 
       WeatherSite.findAndUpdate({_id: weatherSite._id}, {isActivated: false}, function(err, res){
         if(err)
-          res.status(500).json(message: 'weatherSite not found');
+          res.status(500).json({message: 'weatherSite not found'});
 
         res.status(200).json({message: 'deleted'});
-      }),
+      });
     });
 });
 
