@@ -102,7 +102,7 @@ router.delete("/:SiteId", function(req, res){
 
 router.get("/paragliding/:SiteId", function(req, res){
 
-  // var windDirection get from mysql
+  // var cardinalDirection get from mysql
   var cardinalDirection = ['N', 'NE', 'E'];
 
   WeatherSite.findOne({site_id: req.params.SiteId}, function(err, weatherSite){
@@ -148,7 +148,7 @@ function IsWindDirectionOK(cardinalDirection, degree){
     var acceptedDegree = cardinalPoint[elem];
     if ( degree >= acceptedDegree[0] && degree <= acceptedDegree[1])
       return true;
-  })
+  });
 
   return false;
 }
