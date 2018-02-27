@@ -141,7 +141,8 @@ function IsWindDirectionOK(cardinalDirection, degree){
     "W":[258.75, 281.25],
     "WNW":[281.25, 303.75],
     "NW":[303.75, 326.25],
-    "NNW":[326.25, 348.75]
+    "NNW":[326.25, 348.75],
+    "TOUTES":[0, 360]
   }
 
   cardinalDirection.forEach(function(elem){
