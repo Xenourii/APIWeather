@@ -5,11 +5,22 @@ var db = require('../../../../config/index.js');
 
 var WeatherSite = require('../../../../models/WeatherSite.js');
 
+var mysqlconnection = require('../../../../config/index.js');
+
 router.get("/:SiteId", function(req, res){
 
-  //var get from mysql
-  var coordLatitude = 5.6037;
-  var coordLongitude = 0.1870;
+  var coordLatitude = 0.0;
+  var coordLongitude = 0.0;
+
+  var sql = "SELECT * from sites WHEN id=" + req.params.SiteId;
+  mysqlconnection.query(sql, function (err, result){
+    if(err)
+      res.status(500).json(err);
+
+    coordLatitude = result.latitude;
+    coordLongitude = result.longitude;
+  });
+
 
   WeatherSite.findOne({site_id: req.params.SiteId, isActivated: true}, function(err, weatherSite){
     if (weatherSite){
@@ -102,8 +113,16 @@ router.delete("/:SiteId", function(req, res){
 
 router.get("/paragliding/:SiteId", function(req, res){
 
-  // var cardinalDirection get from mysql
-  var cardinalDirection = ['N', 'NE', 'E'];
+  var cardinalDirection = ['TOUTES'];
+
+  var sql = "SELECT orientation from orientations WHEN id_site=" + req.params.SiteId;
+  mysqlconnection.query(sql, function (err, result){
+    if(err)
+      res.status(500).json(err);
+
+    cardinalDirection = result;
+  });
+
 
   WeatherSite.findOne({site_id: req.params.SiteId}, function(err, weatherSite){
     if (err)
