@@ -1,10 +1,7 @@
 var router = require('express').Router();
 var OpenWeatherMapHelper = require('../../../../helpers/openweathermap.js')();
-
 var db = require('../../../../config/index.js');
-
 var WeatherSite = require('../../../../models/WeatherSite.js');
-
 var mysqlconnection = require('../../../../config/index.js');
 
 router.get("/:SiteId", function(req, res){
@@ -20,7 +17,6 @@ router.get("/:SiteId", function(req, res){
     coordLatitude = result.latitude;
     coordLongitude = result.longitude;
   });
-
 
   WeatherSite.findOne({site_id: req.params.SiteId, isActivated: true}, function(err, weatherSite){
     if (weatherSite){
@@ -62,7 +58,6 @@ router.get("/:SiteId", function(req, res){
       });
     }
   });
-
 });
 
 router.post('/', function(req, res){
@@ -113,7 +108,7 @@ router.delete("/:SiteId", function(req, res){
 
 router.get("/paragliding/:SiteId", function(req, res){
 
-  var cardinalDirection = ['TOUTES'];
+  var cardinalDirection = [];
 
   var sql = "SELECT orientation from orientations WHEN id_site=" + req.params.SiteId;
   mysqlconnection.query(sql, function (err, result){
@@ -128,18 +123,18 @@ router.get("/paragliding/:SiteId", function(req, res){
     if (err)
       res.status(500).json(err);
 
-      var weatherId = weatherSite.openweathermap.weather[0].id;
-      var windSpeed = weatherSite.openweathermap.wind.speed;
-      var windDirectionDegree = weatherSite.openweathermap.wind.deg; //N = 0, E = 90, S = 180, W = 270
+    var weatherId = weatherSite.openweathermap.weather[0].id;
+    var windSpeed = weatherSite.openweathermap.wind.speed;
+    var windDirectionDegree = weatherSite.openweathermap.wind.deg; //N = 0, E = 90, S = 180, W = 270
 
-      var IsWeatherOK = (weatherId >= 800 && weatherId <= 804);
-      var IsWindSpeedOK = (windSpeed * 3.6 < 35);
-      var IsWindDirectionOK = IsWindDirectionOK(cardinalDirection, windDirectionDegree)
+    var IsWeatherOK = (weatherId >= 800 && weatherId <= 804);
+    var IsWindSpeedOK = (windSpeed * 3.6 < 35);
+    var IsWindDirectionOK = IsWindDirectionOK(cardinalDirection, windDirectionDegree)
 
-      if(IsWeatherOK && IsWindSpeedOK && IsWindDirectionOK)
-        res.status(200).json({'message': true});
-      else
-        res.status(200).json({'message': false});
+    if(IsWeatherOK && IsWindSpeedOK && IsWindDirectionOK)
+      res.status(200).json({'message': true});
+    else
+      res.status(200).json({'message': false});
   });
 });
 
